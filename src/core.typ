@@ -110,6 +110,52 @@
 
 #let void(monad, m) = (monad.bind)(m, _ => (monad.pure)(none))
 
+// `let-bind(k)` tags a callback so `do-bind` can tell it apart from a plain
+// monadic action. The tag is necessary because in State/Reader/Writer the
+// actions themselves are functions — distinguishing by `type()` is not safe.
+#let let-bind(k) = (_do-bind-cont: k)
+
+#let _is-let-bind(step) = (
+  type(step) == dictionary and "_do-bind-cont" in step
+)
+
+// `do-bind(monad, steps)` folds a flat sequence of actions and callbacks
+// via `bind`. Each step is either:
+//   - a monadic action M a              (its result is discarded)
+//   - `let-bind(v => next(v))` arrow    (binds previous result into `v`)
+//
+// Read it like Haskell `do`:
+//   do { Set("x", 0); v <- Get("x"); Set("y", v + 1) }
+// becomes:
+//   do-bind(state.monad, (
+//     state.put-at("x", 0),
+//     state.get-at("x"),
+//     let-bind(v => state.put-at("y", v + 1)),
+//   ))
+//
+// The first step must be an action, not a let-bind.
+#let do-bind(monad, steps) = {
+  if steps.len() == 0 {
+    return (monad.pure)(none)
+  }
+
+  let first = steps.first()
+  if _is-let-bind(first) {
+    panic("do-bind: first step must be an action, not a let-bind")
+  }
+
+  let acc = first
+  for step in steps.slice(1) {
+    if _is-let-bind(step) {
+      acc = (monad.bind)(acc, step._do-bind-cont)
+    } else {
+      acc = (monad.bind)(acc, _ => step)
+    }
+  }
+
+  acc
+}
+
 #let replicate(monad, n, m) = {
   let acc = (monad.pure)(())
   let i = 0

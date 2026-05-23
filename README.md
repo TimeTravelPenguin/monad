@@ -35,7 +35,7 @@ for everything else.
 
 | Module | Purpose |
 | --- | --- |
-| `core.typ` | `pure`, `bind`, `seq`/`do`, `fmap`, `join`, `ap`, `kleisli`, `sequence`, `map-m`, `when`, `replicate` |
+| `core.typ` | `pure`, `bind`, `seq`/`do`, `do-bind`/`let-bind`, `fmap`, `join`, `ap`, `kleisli`, `sequence`, `map-m`, `when`, `replicate` |
 | `laws.typ` | Runtime checkers for the three monad laws plus the two functor laws |
 | `free.typ` | `make(handlers:)` — derive a State-backed builder from named ops |
 | `instances/identity.typ` | The trivial monad |
@@ -79,19 +79,54 @@ graph constructors, animation timelines, layout DSLs.
 SomeEnv({ Set("x", 2); Add("x", 3) })
 ```
 
-### 2. Explicit `bind` — when you need dataflow with names
+### 2. `do-bind` — sequencing with named results
 
-When a later op depends on the *result* of an earlier op (not just the
-state), use `bind`:
+When a later op needs the *value* of an earlier op (not just shared state),
+use `do-bind`. Steps that need the previous value wrap themselves in
+`let-bind`:
 
 ```typ
-#import "@preview/monad:0.1.0": bind, pure, state
+#import "@preview/monad:0.1.0": do-bind, let-bind, pure, state, maybe
 
-#let prog = bind(state.monad, state.get-at("x"), x =>
-  bind(state.monad, state.put-at("y", x * 2), _ =>
-    pure(state.monad, x * 2)))
+#let prog = do-bind(state.monad, (
+  state.put-at("x", 10),
+  state.get-at("x"),
+  let-bind(v => state.put-at("y", v * 2)),
+))
 
-#state.run(prog, (x: 7,))  // ((x: 7, y: 14), 14)
+#state.run(prog, (:))  // ((x: 10, y: 20), 20)
+```
+
+Same shape for any monad:
+
+```typ
+#let safe-div(a, b) = if b == 0 { maybe.nothing } else { maybe.just(a / b) }
+
+#do-bind(maybe.monad, (
+  safe-div(100, 5),
+  let-bind(x => safe-div(x, 2)),
+  let-bind(y => pure(maybe.monad, y + 1)),
+))  // maybe.just(11) — short-circuits to nothing if any step fails
+```
+
+For explicit `bind` chains (`Op1 >>= \x -> Op2 x`) the raw `bind` and
+`pure` are exported too.
+
+### Control flow in builder blocks
+
+`if` (with or without `else`) and `for` work inside builder block bodies.
+`if false { ... }` simply contributes nothing to the sequence:
+
+```typ
+SomeEnv({
+  Set("count", 0)
+  for n in (1, 2, 3, 4) {
+    Add("count", n)
+  }
+  if debug-mode {
+    Set("note", "hello")
+  }
+})
 ```
 
 ### 3. Define your own instance — when nothing fits

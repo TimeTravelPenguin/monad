@@ -28,6 +28,8 @@
   unless,
   void,
   replicate,
+  do-bind,
+  let-bind,
 )
 
 #import "laws.typ": (
