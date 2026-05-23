@@ -5,7 +5,23 @@
 // uses arrays under concatenation; supply your own monoid via `make(empty:,
 // append:)` for strings, numeric sums, etc.
 
-#let make(empty: (), append: (a, b) => a + b) = (
+/// Construct a Writer monad for a custom log monoid. Provide an `empty`
+/// value and a binary associative `append`. Returns a bundle with the
+/// monad instance plus a tailored `tell`.
+///
+/// ```example
+/// #let w = writer.make(empty: "", append: (a, b) => a + b)
+/// #let tell = w.tell
+/// #bind(w.monad, tell("hello "), _ => bind(w.monad, tell("world"), _ => pure(w.monad, 42)))
+/// ```
+///
+/// -> dictionary
+#let make(
+  /// The monoid identity. -> any
+  empty: (),
+  /// Associative combine. -> function
+  append: (a, b) => a + b,
+) = (
   monad: (
     pure: x => (empty, x),
     bind: (m, k) => {
@@ -20,22 +36,52 @@
   append: append,
 )
 
-// Default Writer instance: log is an array, combined via concatenation.
-
+/// Default Writer bundle: log is an array combined by concatenation.
+/// -> dictionary
 #let default = make()
 
+/// Default Writer monad instance (array log).
+/// -> dictionary
 #let monad = default.monad
 
+/// Append a value to the default Writer's log.
+///
+/// ```example
+/// #writer.tell(("event-1",))
+/// ```
+///
+/// -> array
 #let tell = default.tell
 
-#let listen(m) = {
+/// Run an action and additionally expose its produced log as part of the
+/// value: result becomes `(log, (value, log))`.
+///
+/// -> array
+#let listen(
+  /// -> array
+  m,
+) = {
   let (log, v) = m
   (log, (v, log))
 }
 
-#let censor(f, m) = {
+/// Apply a transformation to the accumulated log post-hoc, without
+/// touching the value.
+///
+/// -> array
+#let censor(
+  /// `log -> log`. -> function
+  f,
+  /// -> array
+  m,
+) = {
   let (log, v) = m
   (f(log), v)
 }
 
-#let run(m) = m
+/// Identity `run` — a Writer value is already `(log, value)`.
+/// -> array
+#let run(
+  /// -> array
+  m,
+) = m

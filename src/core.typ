@@ -17,11 +17,56 @@
 //   produces `(set-action, add-action)` which `do` flattens and folds.
 //   For pure programmatic use, pass an array directly.
 
-#let pure(monad, x) = (monad.pure)(x)
+/// Lift a plain value into a monadic context.
+///
+/// ```example
+/// #pure(maybe.monad, 7)
+/// ```
+///
+/// -> any
+#let pure(
+  /// The monad instance dict (with `pure` and `bind` fields).
+  /// -> dictionary
+  monad,
+  /// The value to inject. -> any
+  x,
+) = (monad.pure)(x)
 
-#let bind(monad, m, k) = (monad.bind)(m, k)
+/// Sequence two computations, feeding the result of the first into a
+/// callback that produces the second. The bedrock combinator of every
+/// monad; everything else in this file is derived from `pure` and `bind`.
+///
+/// ```example
+/// #bind(maybe.monad, maybe.just(3), x => maybe.just(x + 1))
+/// ```
+///
+/// -> any
+#let bind(
+  /// -> dictionary
+  monad,
+  /// First monadic value. -> any
+  m,
+  /// Callback `value -> M b`. -> function
+  k,
+) = (monad.bind)(m, k)
 
-#let fmap(monad, f, m) = {
+/// Apply a plain function to the value inside a monadic context, without
+/// flattening. Equivalent to `bind(m, x => pure(f(x)))`; instances may
+/// provide a faster implementation via the optional `fmap` field.
+///
+/// ```example
+/// #fmap(maybe.monad, x => x * 10, maybe.just(4))
+/// ```
+///
+/// -> any
+#let fmap(
+  /// -> dictionary
+  monad,
+  /// Plain transformation. -> function
+  f,
+  /// Source monadic value. -> any
+  m,
+) = {
   if "fmap" in monad {
     return (monad.fmap)(f, m)
   }
@@ -29,7 +74,21 @@
   (monad.bind)(m, x => (monad.pure)(f(x)))
 }
 
-#let join(monad, mm) = {
+/// Collapse a nested monadic value `M (M a)` into `M a`.
+/// Useful when a callback produces an already-wrapped value and you want
+/// to unwrap a layer.
+///
+/// ```example
+/// #join(maybe.monad, maybe.just(maybe.just(5)))
+/// ```
+///
+/// -> any
+#let join(
+  /// -> dictionary
+  monad,
+  /// Doubly-wrapped value. -> any
+  mm,
+) = {
   if "join" in monad {
     return (monad.join)(mm)
   }
@@ -37,7 +96,22 @@
   (monad.bind)(mm, m => m)
 }
 
-#let ap(monad, mf, ma) = {
+/// Applicative application: run a monadic function and a monadic argument,
+/// then apply.
+///
+/// ```example
+/// #ap(maybe.monad, maybe.just(x => x + 1), maybe.just(4))
+/// ```
+///
+/// -> any
+#let ap(
+  /// -> dictionary
+  monad,
+  /// Function-valued monadic. -> any
+  mf,
+  /// Argument-valued monadic. -> any
+  ma,
+) = {
   if "ap" in monad {
     return (monad.ap)(mf, ma)
   }
@@ -58,7 +132,21 @@
   out
 }
 
-#let seq(monad, ms) = {
+/// Sequence a list of monadic values, discarding intermediate results.
+/// Returns the final value. Accepts nested arrays (from Typst block-join)
+/// and flattens them before folding.
+///
+/// ```example
+/// #seq(maybe.monad, (maybe.just(1), maybe.just(2), maybe.just(3)))
+/// ```
+///
+/// -> any
+#let seq(
+  /// -> dictionary
+  monad,
+  /// Array (possibly nested) of monadic values. -> array
+  ms,
+) = {
   let actions = _flatten(ms)
   if actions.len() == 0 {
     return (monad.pure)(none)
@@ -72,9 +160,30 @@
   acc
 }
 
+/// Alias for @seq. Reads more naturally inside builder blocks:
+/// `do(state.monad, { ... })`.
+///
+/// -> any
 #let do = seq
 
-#let sequence(monad, ms) = {
+/// Sequence a list of monadic values, *collecting* every intermediate
+/// result into an array. The returned action yields a tuple of length
+/// `ms.len()`.
+///
+/// ```example
+/// #state.run(
+///   sequence(state.monad, (state.put-at("a", 1), state.put-at("b", 2))),
+///   (:),
+/// )
+/// ```
+///
+/// -> any
+#let sequence(
+  /// -> dictionary
+  monad,
+  /// Array of monadic values. -> array
+  ms,
+) = {
   let actions = _flatten(ms)
   let acc = (monad.pure)(())
   for m in actions {
@@ -87,11 +196,52 @@
   acc
 }
 
-#let map-m(monad, f, xs) = sequence(monad, xs.map(f))
+/// Map a monad-producing function across an array, then sequence the
+/// results. `mapM` from Haskell.
+///
+/// ```example
+/// #map-m(maybe.monad, x => maybe.just(x * 2), (1, 2, 3))
+/// ```
+///
+/// -> any
+#let map-m(
+  /// -> dictionary
+  monad,
+  /// `a -> M b`. -> function
+  f,
+  /// Array of inputs. -> array
+  xs,
+) = sequence(monad, xs.map(f))
 
-#let for-m(monad, xs, f) = sequence(monad, xs.map(f))
+/// Like @map-m with the array and function arguments swapped — convenient
+/// when the function is a multi-line closure.
+///
+/// -> any
+#let for-m(
+  /// -> dictionary
+  monad,
+  /// -> array
+  xs,
+  /// -> function
+  f,
+) = sequence(monad, xs.map(f))
 
-#let kleisli(monad, fs) = {
+/// Compose a list of Kleisli arrows (`a -> M b`, `b -> M c`, ...) into a
+/// single `a -> M z` arrow.
+///
+/// ```example
+/// #let inc = x => maybe.just(x + 1)
+/// #let double = x => maybe.just(x * 2)
+/// #(kleisli(maybe.monad, (inc, double)))(3)
+/// ```
+///
+/// -> function
+#let kleisli(
+  /// -> dictionary
+  monad,
+  /// Array of Kleisli arrows. -> array
+  fs,
+) = {
   x => {
     let acc = (monad.pure)(x)
     for f in fs {
@@ -102,39 +252,117 @@
   }
 }
 
-#let when(monad, cond, m) = {
+/// Run an action only if a condition holds, otherwise produce `pure(none)`.
+///
+/// ```example
+/// #when(maybe.monad, 5 > 3, maybe.just("yes"))
+/// ```
+///
+/// -> any
+#let when(
+  /// -> dictionary
+  monad,
+  /// -> bool
+  cond,
+  /// -> any
+  m,
+) = {
   if cond { m } else { (monad.pure)(none) }
 }
 
-#let unless(monad, cond, m) = when(monad, not cond, m)
+/// Inverse of @when — run the action only when the condition is `false`.
+///
+/// -> any
+#let unless(
+  /// -> dictionary
+  monad,
+  /// -> bool
+  cond,
+  /// -> any
+  m,
+) = when(monad, not cond, m)
 
-#let void(monad, m) = (monad.bind)(m, _ => (monad.pure)(none))
+/// Discard the value produced by an action while keeping its effect.
+///
+/// -> any
+#let void(
+  /// -> dictionary
+  monad,
+  /// -> any
+  m,
+) = (monad.bind)(m, _ => (monad.pure)(none))
 
-// `let-bind(k)` tags a callback so `do-bind` can tell it apart from a plain
-// monadic action. The tag is necessary because in State/Reader/Writer the
-// actions themselves are functions — distinguishing by `type()` is not safe.
-#let let-bind(k) = (_do-bind-cont: k)
+/// Repeat an action `n` times and collect every produced value into an
+/// array.
+///
+/// ```example
+/// #replicate(maybe.monad, 3, maybe.just("hi"))
+/// ```
+///
+/// -> any
+#let replicate(
+  /// -> dictionary
+  monad,
+  /// Number of repetitions (zero or negative produces `pure(())`). -> int
+  n,
+  /// -> any
+  m,
+) = {
+  let acc = (monad.pure)(())
+  let i = 0
+  while i < n {
+    acc = (monad.bind)(
+      acc,
+      xs => (monad.bind)(m, v => (monad.pure)(xs + (v,))),
+    )
+    i = i + 1
+  }
+
+  acc
+}
+
+/// Wrap a callback so @do-bind can tell it apart from a plain action.
+/// Required because in State/Reader/Writer monads, *actions* are themselves
+/// functions — `type()` alone cannot disambiguate.
+///
+/// ```example
+/// #let-bind(v => maybe.just(v + 1))
+/// ```
+///
+/// -> dictionary
+#let let-bind(
+  /// `value -> M b`. -> function
+  k,
+) = (_do-bind-cont: k)
 
 #let _is-let-bind(step) = (
   type(step) == dictionary and "_do-bind-cont" in step
 )
 
-// `do-bind(monad, steps)` folds a flat sequence of actions and callbacks
-// via `bind`. Each step is either:
-//   - a monadic action M a              (its result is discarded)
-//   - `let-bind(v => next(v))` arrow    (binds previous result into `v`)
-//
-// Read it like Haskell `do`:
-//   do { Set("x", 0); v <- Get("x"); Set("y", v + 1) }
-// becomes:
-//   do-bind(state.monad, (
-//     state.put-at("x", 0),
-//     state.get-at("x"),
-//     let-bind(v => state.put-at("y", v + 1)),
-//   ))
-//
-// The first step must be an action, not a let-bind.
-#let do-bind(monad, steps) = {
+/// Fold a flat sequence of actions and callbacks via @bind. Each step is
+/// either a monadic action (its value is discarded) or `let-bind(v => ...)`
+/// (the previous value is bound to `v`).
+///
+/// Reads like Haskell `do`: write actions and `let-bind`-wrapped arrows in
+/// the order they should fire.
+///
+/// ```example
+/// #let prog = do-bind(state.monad, (
+///   state.put-at("x", 10),
+///   state.get-at("x"),
+///   let-bind(v => state.put-at("y", v * 2)),
+/// ))
+/// #state.run(prog, (:))
+/// ```
+///
+/// -> any
+#let do-bind(
+  /// -> dictionary
+  monad,
+  /// Steps in execution order. First must be an action, not a let-bind.
+  /// -> array
+  steps,
+) = {
   if steps.len() == 0 {
     return (monad.pure)(none)
   }
@@ -151,20 +379,6 @@
     } else {
       acc = (monad.bind)(acc, _ => step)
     }
-  }
-
-  acc
-}
-
-#let replicate(monad, n, m) = {
-  let acc = (monad.pure)(())
-  let i = 0
-  while i < n {
-    acc = (monad.bind)(
-      acc,
-      xs => (monad.bind)(m, v => (monad.pure)(xs + (v,))),
-    )
-    i = i + 1
   }
 
   acc

@@ -15,48 +15,132 @@
 
 #import "core.typ": pure, bind, fmap
 
-#let check-left-identity(monad, eq, a, f) = {
+/// First monad law: lifting then binding equals direct application.
+/// `bind(pure(a), f) == f(a)`.
+///
+/// ```example
+/// #check-left-identity(maybe.monad, (a, b) => a == b, 5, x => maybe.just(x + 1))
+/// ```
+///
+/// -> bool
+#let check-left-identity(
+  /// -> dictionary
+  monad,
+  /// Equality predicate on monadic values. -> function
+  eq,
+  /// Sample value to pump through `pure`. -> any
+  a,
+  /// Kleisli arrow `a -> M b`. -> function
+  f,
+) = {
   let lhs = bind(monad, pure(monad, a), f)
   let rhs = f(a)
   eq(lhs, rhs)
 }
 
-#let check-right-identity(monad, eq, m) = {
+/// Second monad law: binding `pure` as the continuation is a no-op.
+/// `bind(m, pure) == m`.
+///
+/// -> bool
+#let check-right-identity(
+  /// -> dictionary
+  monad,
+  /// -> function
+  eq,
+  /// -> any
+  m,
+) = {
   let lhs = bind(monad, m, x => pure(monad, x))
   eq(lhs, m)
 }
 
-#let check-associativity(monad, eq, m, f, g) = {
+/// Third monad law: bind is associative.
+/// `bind(bind(m, f), g) == bind(m, x => bind(f(x), g))`.
+///
+/// -> bool
+#let check-associativity(
+  /// -> dictionary
+  monad,
+  /// -> function
+  eq,
+  /// -> any
+  m,
+  /// `a -> M b`. -> function
+  f,
+  /// `b -> M c`. -> function
+  g,
+) = {
   let lhs = bind(monad, bind(monad, m, f), g)
   let rhs = bind(monad, m, x => bind(monad, f(x), g))
   eq(lhs, rhs)
 }
 
-#let check-fmap-identity(monad, eq, m) = {
+/// Functor identity law: `fmap(id, m) == m`.
+///
+/// -> bool
+#let check-fmap-identity(
+  /// -> dictionary
+  monad,
+  /// -> function
+  eq,
+  /// -> any
+  m,
+) = {
   let lhs = fmap(monad, x => x, m)
   eq(lhs, m)
 }
 
-#let check-fmap-compose(monad, eq, m, f, g) = {
+/// Functor composition law: `fmap(g ∘ f, m) == fmap(g, fmap(f, m))`.
+///
+/// -> bool
+#let check-fmap-compose(
+  /// -> dictionary
+  monad,
+  /// -> function
+  eq,
+  /// -> any
+  m,
+  /// -> function
+  f,
+  /// -> function
+  g,
+) = {
   let lhs = fmap(monad, x => g(f(x)), m)
   let rhs = fmap(monad, g, fmap(monad, f, m))
   eq(lhs, rhs)
 }
 
-// Run all laws over the cross product of supplied samples.
-//
-// samples = (
-//   values: (a1, a2, ...),         // pumped through pure / arrows
-//   actions: (m1, m2, ...),        // monadic values M a
-//   arrows-f: (f1, f2, ...),       // a -> M b
-//   arrows-g: (g1, g2, ...),       // b -> M c
-//   plain-fs: (f1, ...),           // a -> b (for functor laws)
-//   plain-gs: (g1, ...),           // b -> c
-// )
-//
-// Returns (passed: bool, failures: (label, detail)[])
-
-#let check-laws(monad, eq, samples) = {
+/// Run every law across the cross-product of supplied sample arrays.
+///
+/// `samples` is a dict with optional keys:
+/// - `values`: array of plain values `a`
+/// - `actions`: array of monadic values `M a`
+/// - `arrows-f`: array of `a -> M b`
+/// - `arrows-g`: array of `b -> M c`
+/// - `plain-fs`: array of `a -> b`
+/// - `plain-gs`: array of `b -> c`
+///
+/// Returns `(passed: bool, failures: array)`.
+///
+/// ```example
+/// #let report = check-laws(maybe.monad, (a, b) => a == b, (
+///   values: (1, 2),
+///   actions: (maybe.just(5), maybe.nothing),
+///   "arrows-f": (x => maybe.just(x + 1),),
+///   "arrows-g": (x => maybe.just(x * 2),),
+/// ))
+/// #report.passed
+/// ```
+///
+/// -> dictionary
+#let check-laws(
+  /// -> dictionary
+  monad,
+  /// -> function
+  eq,
+  /// -> dictionary
+  samples,
+) = {
   let failures = ()
 
   for a in samples.at("values", default: ()) {
@@ -100,10 +184,21 @@
   (passed: failures.len() == 0, failures: failures)
 }
 
-// Equality helper for State-shaped monads: observes by running over a list of
-// sample initial states and comparing outputs.
-
-#let state-eq(run, sample-states) = (m1, m2) => {
+/// Equality helper for State-shaped monads. Returns a predicate that
+/// observes two state actions by running them across the supplied
+/// initial states and comparing outputs.
+///
+/// ```example
+/// #let eq = state-eq(state.run, ((:), (x: 1), (x: 5, y: 10)))
+/// ```
+///
+/// -> function
+#let state-eq(
+  /// State `run` function. -> function
+  run,
+  /// Initial states to sample. -> array
+  sample-states,
+) = (m1, m2) => {
   for s in sample-states {
     if run(m1, s) != run(m2, s) { return false }
   }
@@ -111,9 +206,16 @@
   true
 }
 
-// Equality helper for Reader-shaped monads: observes by running over envs.
-
-#let reader-eq(run, sample-envs) = (m1, m2) => {
+/// Equality helper for Reader-shaped monads. Same as @state-eq but observes
+/// across sample environments.
+///
+/// -> function
+#let reader-eq(
+  /// Reader `run` function. -> function
+  run,
+  /// -> array
+  sample-envs,
+) = (m1, m2) => {
   for e in sample-envs {
     if run(m1, e) != run(m2, e) { return false }
   }
