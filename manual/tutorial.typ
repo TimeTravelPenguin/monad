@@ -320,6 +320,3 @@ worth reading once.
 - Sequencing named commands is helped by `free.make`.
 - The same protocol covers Maybe, Result, Reader, Writer, and your
   own custom monads.
-
-The rest of this manual is reference: every public function with its
-parameter list, return type, and a runnable example.

@@ -156,6 +156,11 @@ auto-generated reference documentation for every public symbol.
 
 #include "tutorial.typ"
 
+#include "cookbook.typ"
+
+The rest of this manual is reference: every public function with its
+parameter list, return type, and a runnable example.
+
 = Core combinators
 
 The combinators in `src/core.typ` operate over an opaque *monad instance*:
