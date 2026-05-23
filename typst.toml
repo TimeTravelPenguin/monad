@@ -1,0 +1,22 @@
+[package]
+name = "monad"
+version = "0.1.0"
+entrypoint = "src/lib.typ"
+authors = ["Phillip Smith"]
+license = "MIT"
+description = "Build correct, lawful monadic DSLs in Typst. Provides State/Reader/Writer/Maybe/Result instances, free-monad construction for custom builders, and runtime monad-law checks."
+repository = "https://github.com/filupsmith/typst-monad"
+keywords = ["monad", "state", "dsl", "builder", "functional"]
+categories = ["scripting"]
+compiler = "0.13.0"
+exclude = [
+  "examples/",
+  "tests/",
+  ".gitignore",
+  ".git",
+  ".vscode",
+  ".claude",
+]
+
+[tool.tytanic]
+default.ppi = 300

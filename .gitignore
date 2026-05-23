@@ -1,0 +1,6 @@
+.DS_Store
+*.pdf
+target/
+tests/**/diff/
+tests/**/out/
+.vscode/
