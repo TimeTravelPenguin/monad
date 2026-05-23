@@ -12,6 +12,9 @@ compiler = "0.13.0"
 exclude = [
   "examples/",
   "tests/",
+  "manual/",
+  "just/",
+  "justfile",
   ".gitignore",
   ".git",
   ".vscode",
