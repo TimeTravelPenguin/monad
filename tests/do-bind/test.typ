@@ -1,5 +1,5 @@
 #import "/tests/template.typ": test-page
-#import "/src/lib.typ": do-bind, let-bind, pure, state, option, result
+#import "/src/lib.typ": do-bind, let-bind, option, pure, result, state
 
 #show: test-page
 

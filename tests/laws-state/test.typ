@@ -1,5 +1,5 @@
 #import "/tests/template.typ": test-page
-#import "/src/lib.typ": check-laws, state-eq, state
+#import "/src/lib.typ": check-laws, state, state-eq
 
 #show: test-page
 

@@ -5,11 +5,15 @@
 
 #let builder = free.make(handlers: (
   Set: (key, val) => state => {
-    let s = state; s.insert(key, val); (s, val)
+    let s = state
+    s.insert(key, val)
+    (s, val)
   },
   Add: (key, n) => state => {
     let cur = state.at(key, default: 0)
-    let s = state; s.insert(key, cur + n); (s, cur + n)
+    let s = state
+    s.insert(key, cur + n)
+    (s, cur + n)
   },
 ))
 

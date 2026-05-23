@@ -13,7 +13,7 @@
 //   fmap-identity:   fmap(id, m) == m
 //   fmap-compose:    fmap(g ∘ f, m) == fmap(g, fmap(f, m))
 
-#import "core.typ": pure, bind, fmap
+#import "core.typ": bind, fmap, pure
 
 /// First monad law: lifting then binding equals direct application.
 /// `bind(pure(a), f) == f(a)`.

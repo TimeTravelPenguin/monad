@@ -1,4 +1,4 @@
-#import "../src/lib.typ": bind, pure, do, check-laws
+#import "../src/lib.typ": bind, check-laws, do, pure
 
 #let counter-monad = (
   pure: x => (count: 0, value: x),
@@ -10,10 +10,11 @@
 
 #let leaf(x) = (count: 0, value: x)
 
-#let chained = bind(counter-monad, leaf(1), a =>
-  bind(counter-monad, leaf(2), b =>
-    bind(counter-monad, leaf(3), c =>
-      pure(counter-monad, a + b + c))))
+#let chained = bind(counter-monad, leaf(1), a => bind(
+  counter-monad,
+  leaf(2),
+  b => bind(counter-monad, leaf(3), c => pure(counter-monad, a + b + c)),
+))
 
 After three binds: #chained.
 
@@ -31,6 +32,6 @@ After three binds: #chained.
   ),
 )
 
-This "monad" violates the laws: #report.failures.len() failures detected. 
+This "monad" violates the laws: #report.failures.len() failures detected.
 (Counting binds breaks associativity -- the left-leaning tree counts differently from the right-leaning
 one.)

@@ -13,34 +13,13 @@
 //   #import "@preview/monad:0.1.0": do, bind, pure, free, state
 
 #import "core.typ": (
-  pure,
-  bind,
-  fmap,
-  join,
-  ap,
-  seq,
-  do,
-  sequence,
-  map-m,
-  for-m,
-  kleisli,
-  when,
-  unless,
-  void,
-  replicate,
-  do-bind,
-  let-bind,
+  ap, bind, do, do-bind, fmap, for-m, join, kleisli, let-bind, map-m, pure,
+  replicate, seq, sequence, unless, void, when,
 )
 
 #import "laws.typ": (
-  check-laws,
-  check-left-identity,
-  check-right-identity,
-  check-associativity,
-  check-fmap-identity,
-  check-fmap-compose,
-  state-eq,
-  reader-eq,
+  check-associativity, check-fmap-compose, check-fmap-identity, check-laws,
+  check-left-identity, check-right-identity, reader-eq, state-eq,
 )
 
 #import "free.typ" as free

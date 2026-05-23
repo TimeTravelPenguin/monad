@@ -300,11 +300,11 @@ The instances answer different shapes of question. A quick guide:
   stroke: 0.5pt + luma(180),
   [*Use*], [*When you need*],
   [Identity], [a no-effect baseline for monad-generic code],
-  [Option],   [chained lookups that may produce no value],
-  [Result],   [chained validation/parsing with typed failure reasons],
-  [State],    [a counter, accumulator, or evolving context shared across steps],
-  [Reader],   [config or dependencies passed once, read anywhere],
-  [Writer],   [non-fatal warnings, audit logs, or other side records],
+  [Option], [chained lookups that may produce no value],
+  [Result], [chained validation/parsing with typed failure reasons],
+  [State], [a counter, accumulator, or evolving context shared across steps],
+  [Reader], [config or dependencies passed once, read anywhere],
+  [Writer], [non-fatal warnings, audit logs, or other side records],
 )
 
 When more than one fits, you can either pick the simplest one that

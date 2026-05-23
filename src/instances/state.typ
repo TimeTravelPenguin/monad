@@ -17,10 +17,12 @@
 /// -> dictionary
 #let monad = (
   pure: x => (state => (state, x)),
-  bind: (m, k) => (state => {
-    let (s2, v) = m(state)
-    k(v)(s2)
-  }),
+  bind: (m, k) => (
+    state => {
+      let (s2, v) = m(state)
+      k(v)(s2)
+    }
+  ),
 )
 
 /// Action that returns the current state without modifying it.

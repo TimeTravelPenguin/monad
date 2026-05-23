@@ -18,7 +18,10 @@
 #let option-report = check-laws(option.monad, eq, (
   values: (1, 2),
   actions: (option.some(5), option.nothing),
-  "arrows-f": (x => option.some(x + 1), x => if x > 0 { option.some(x) } else { option.nothing }),
+  "arrows-f": (
+    x => option.some(x + 1),
+    x => if x > 0 { option.some(x) } else { option.nothing },
+  ),
   "arrows-g": (x => option.some(x * 2), x => option.nothing),
   "plain-fs": (x => x + 1,),
   "plain-gs": (x => x * 2,),

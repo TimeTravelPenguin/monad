@@ -1,5 +1,5 @@
 #import "/tests/template.typ": test-page
-#import "/src/lib.typ": pure, bind, fmap, seq, identity, option
+#import "/src/lib.typ": bind, fmap, identity, option, pure, seq
 
 #show: test-page
 
@@ -9,7 +9,13 @@
 #assert.eq(seq(identity.monad, (1, 2, 3)), 3)
 
 #assert.eq(pure(option.monad, 1), option.some(1))
-#assert.eq(bind(option.monad, option.some(2), x => option.some(x + 1)), option.some(3))
-#assert.eq(bind(option.monad, option.nothing, x => option.some(x + 1)), option.nothing)
+#assert.eq(
+  bind(option.monad, option.some(2), x => option.some(x + 1)),
+  option.some(3),
+)
+#assert.eq(
+  bind(option.monad, option.nothing, x => option.some(x + 1)),
+  option.nothing,
+)
 
 core sanity OK
