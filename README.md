@@ -39,7 +39,7 @@ for everything else.
 | `laws.typ` | Runtime checkers for the three monad laws plus the two functor laws |
 | `free.typ` | `make(handlers:)` — derive a State-backed builder from named ops |
 | `instances/identity.typ` | The trivial monad |
-| `instances/maybe.typ` | `just`/`nothing`, short-circuit on absence |
+| `instances/option.typ` | `some`/`nothing`, short-circuit on absence |
 | `instances/result.typ` | `ok`/`err`, short-circuit on error |
 | `instances/state.typ` | `s -> (s, a)` with `get`, `put`, `modify`, `gets`, plus keyed helpers |
 | `instances/reader.typ` | `env -> a` with `ask`, `asks`, `local` |
@@ -86,7 +86,7 @@ use `do-bind`. Steps that need the previous value wrap themselves in
 `let-bind`:
 
 ```typ
-#import "@preview/monad:0.1.0": do-bind, let-bind, pure, state, maybe
+#import "@preview/monad:0.1.0": do-bind, let-bind, pure, state, option
 
 #let prog = do-bind(state.monad, (
   state.put-at("x", 10),
@@ -100,13 +100,13 @@ use `do-bind`. Steps that need the previous value wrap themselves in
 Same shape for any monad:
 
 ```typ
-#let safe-div(a, b) = if b == 0 { maybe.nothing } else { maybe.just(a / b) }
+#let safe-div(a, b) = if b == 0 { option.nothing } else { option.some(a / b) }
 
-#do-bind(maybe.monad, (
+#do-bind(option.monad, (
   safe-div(100, 5),
   let-bind(x => safe-div(x, 2)),
-  let-bind(y => pure(maybe.monad, y + 1)),
-))  // maybe.just(11) — short-circuits to nothing if any step fails
+  let-bind(y => pure(option.monad, y + 1)),
+))  // option.some(11) — short-circuits to nothing if any step fails
 ```
 
 For explicit `bind` chains (`Op1 >>= \x -> Op2 x`) the raw `bind` and

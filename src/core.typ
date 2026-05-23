@@ -20,7 +20,7 @@
 /// Lift a plain value into a monadic context.
 ///
 /// ```example
-/// #pure(maybe.monad, 7)
+/// #pure(option.monad, 7)
 /// ```
 ///
 /// -> any
@@ -37,7 +37,7 @@
 /// monad; everything else in this file is derived from `pure` and `bind`.
 ///
 /// ```example
-/// #bind(maybe.monad, maybe.just(3), x => maybe.just(x + 1))
+/// #bind(option.monad, option.some(3), x => option.some(x + 1))
 /// ```
 ///
 /// -> any
@@ -55,7 +55,7 @@
 /// provide a faster implementation via the optional `fmap` field.
 ///
 /// ```example
-/// #fmap(maybe.monad, x => x * 10, maybe.just(4))
+/// #fmap(option.monad, x => x * 10, option.some(4))
 /// ```
 ///
 /// -> any
@@ -79,7 +79,7 @@
 /// to unwrap a layer.
 ///
 /// ```example
-/// #join(maybe.monad, maybe.just(maybe.just(5)))
+/// #join(option.monad, option.some(option.some(5)))
 /// ```
 ///
 /// -> any
@@ -100,7 +100,7 @@
 /// then apply.
 ///
 /// ```example
-/// #ap(maybe.monad, maybe.just(x => x + 1), maybe.just(4))
+/// #ap(option.monad, option.some(x => x + 1), option.some(4))
 /// ```
 ///
 /// -> any
@@ -137,7 +137,7 @@
 /// and flattens them before folding.
 ///
 /// ```example
-/// #seq(maybe.monad, (maybe.just(1), maybe.just(2), maybe.just(3)))
+/// #seq(option.monad, (option.some(1), option.some(2), option.some(3)))
 /// ```
 ///
 /// -> any
@@ -200,7 +200,7 @@
 /// results. `mapM` from Haskell.
 ///
 /// ```example
-/// #map-m(maybe.monad, x => maybe.just(x * 2), (1, 2, 3))
+/// #map-m(option.monad, x => option.some(x * 2), (1, 2, 3))
 /// ```
 ///
 /// -> any
@@ -230,9 +230,9 @@
 /// single `a -> M z` arrow.
 ///
 /// ```example
-/// #let inc = x => maybe.just(x + 1)
-/// #let double = x => maybe.just(x * 2)
-/// #(kleisli(maybe.monad, (inc, double)))(3)
+/// #let inc = x => option.some(x + 1)
+/// #let double = x => option.some(x * 2)
+/// #(kleisli(option.monad, (inc, double)))(3)
 /// ```
 ///
 /// -> function
@@ -255,7 +255,7 @@
 /// Run an action only if a condition holds, otherwise produce `pure(none)`.
 ///
 /// ```example
-/// #when(maybe.monad, 5 > 3, maybe.just("yes"))
+/// #when(option.monad, 5 > 3, option.some("yes"))
 /// ```
 ///
 /// -> any
@@ -296,7 +296,7 @@
 /// array.
 ///
 /// ```example
-/// #replicate(maybe.monad, 3, maybe.just("hi"))
+/// #replicate(option.monad, 3, option.some("hi"))
 /// ```
 ///
 /// -> any
@@ -326,7 +326,7 @@
 /// functions — `type()` alone cannot disambiguate.
 ///
 /// ```example
-/// #let-bind(v => maybe.just(v + 1))
+/// #let-bind(v => option.some(v + 1))
 /// ```
 ///
 /// -> dictionary

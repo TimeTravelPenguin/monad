@@ -243,16 +243,17 @@ get every derived combinator for free --- is not specific to State. The
 package ships five other instances. The shape of "an action" changes;
 the `pure` / `bind` contract does not.
 
-*Maybe* --- `M a = just(a) | nothing`. Models a computation that may
-produce no value. `bind` short-circuits on `nothing`:
+*Option* --- `M a = some(a) | nothing`. Models a computation that may
+produce no value (Rust's ```rs Option<T>```). `bind` short-circuits on
+`nothing`:
 
 ```example
-#let safe-div(a, b) = if b == 0 { maybe.nothing } else { maybe.just(a / b) }
+#let safe-div(a, b) = if b == 0 { option.nothing } else { option.some(a / b) }
 
-#do-bind(maybe.monad, (
+#do-bind(option.monad, (
   safe-div(100, 5),
   let-bind(x => safe-div(x, 2)),
-  let-bind(y => pure(maybe.monad, y + 1)),
+  let-bind(y => pure(option.monad, y + 1)),
 ))
 ```
 
@@ -260,17 +261,17 @@ Replace `0` with a non-zero divisor anywhere and the chain
 succeeds. Try dividing by zero and the rest of the chain is skipped:
 
 ```example
-#let safe-div(a, b) = if b == 0 { maybe.nothing } else { maybe.just(a / b) }
+#let safe-div(a, b) = if b == 0 { option.nothing } else { option.some(a / b) }
 
-#do-bind(maybe.monad, (
+#do-bind(option.monad, (
   safe-div(100, 5),
   let-bind(x => safe-div(x, 0)),
-  let-bind(y => pure(maybe.monad, y + 1)),
+  let-bind(y => pure(option.monad, y + 1)),
 ))
 ```
 
-*Result* --- `M a = ok(a) | err(e)`. Like Maybe but the failure value is
-typed. `bind` short-circuits on `err`, threading the error through.
+*Result* --- `M a = ok(a) | err(e)`. Like Option but the failure value
+is typed. `bind` short-circuits on `err`, threading the error through.
 
 *Reader* --- `M a = env -> a`. A function from an environment. Useful for
 dependency injection: pass config once at the top, read it with `ask`

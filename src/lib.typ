@@ -45,7 +45,7 @@
 
 #import "free.typ" as free
 #import "instances/identity.typ" as identity
-#import "instances/maybe.typ" as maybe
+#import "instances/option.typ" as option
 #import "instances/result.typ" as result
 #import "instances/state.typ" as state
 #import "instances/reader.typ" as reader

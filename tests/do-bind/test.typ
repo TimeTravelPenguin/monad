@@ -1,5 +1,5 @@
 #import "/tests/template.typ": test-page
-#import "/src/lib.typ": do-bind, let-bind, pure, state, maybe, result
+#import "/src/lib.typ": do-bind, let-bind, pure, state, option, result
 
 #show: test-page
 
@@ -24,21 +24,21 @@
 ))
 #assert.eq(state.eval(combine, (:)), 7)
 
-#let safe-div(a, b) = if b == 0 { maybe.nothing } else { maybe.just(a / b) }
+#let safe-div(a, b) = if b == 0 { option.nothing } else { option.some(a / b) }
 
-#let chain = do-bind(maybe.monad, (
+#let chain = do-bind(option.monad, (
   safe-div(100, 5),
   let-bind(x => safe-div(x, 2)),
-  let-bind(y => pure(maybe.monad, y + 1)),
+  let-bind(y => pure(option.monad, y + 1)),
 ))
-#assert.eq(chain, maybe.just(11))
+#assert.eq(chain, option.some(11))
 
-#let blown = do-bind(maybe.monad, (
+#let blown = do-bind(option.monad, (
   safe-div(100, 5),
   let-bind(x => safe-div(x, 0)),
-  let-bind(y => pure(maybe.monad, y + 1)),
+  let-bind(y => pure(option.monad, y + 1)),
 ))
-#assert.eq(blown, maybe.nothing)
+#assert.eq(blown, option.nothing)
 
 #let parse-int(s) = {
   let n = int(s)

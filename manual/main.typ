@@ -4,7 +4,7 @@
 #import "/src/laws.typ"
 #import "/src/free.typ"
 #import "/src/instances/identity.typ" as identity
-#import "/src/instances/maybe.typ" as maybe
+#import "/src/instances/option.typ" as option
 #import "/src/instances/result.typ" as result
 #import "/src/instances/state.typ" as state
 #import "/src/instances/reader.typ" as reader
@@ -73,16 +73,15 @@
   "check-fmap-compose": laws.check-fmap-compose,
   "state-eq": laws.state-eq,
   "reader-eq": laws.reader-eq,
-  just: maybe.just,
-  nothing: maybe.nothing,
+  some: option.some,
+  nothing: option.nothing,
   ok: result.ok,
   err: result.err,
-  "from-maybe": maybe.from-maybe,
   "map-err": result.map-err,
   "unwrap-or": result.unwrap-or,
   free: free,
   identity: identity,
-  maybe: maybe,
+  option: option,
   result: result,
   state: state,
   reader: reader,
@@ -190,12 +189,13 @@ The trivial monad: `M a = a`. Useful as a baseline and for tests.
 
 #render("/src/instances/identity.typ", "identity")
 
-= Maybe instance
+= Option instance
 
-`M a = just(a) | nothing`. Models computations that can absent without a
-typed error. `bind` short-circuits on `nothing`.
+`M a = some(a) | nothing`. Models computations that may produce no value
+(Rust's `Option<T>`). `bind` short-circuits on `nothing`: once a chain
+produces `nothing`, every subsequent step is skipped.
 
-#render("/src/instances/maybe.typ", "maybe")
+#render("/src/instances/option.typ", "option")
 
 = Result instance
 

@@ -1,5 +1,5 @@
 #import "/tests/template.typ": test-page
-#import "/src/lib.typ": check-laws, identity, maybe, result
+#import "/src/lib.typ": check-laws, identity, option, result
 
 #show: test-page
 
@@ -15,15 +15,15 @@
 ))
 #assert(id-report.passed, message: repr(id-report.failures))
 
-#let maybe-report = check-laws(maybe.monad, eq, (
+#let option-report = check-laws(option.monad, eq, (
   values: (1, 2),
-  actions: (maybe.just(5), maybe.nothing),
-  "arrows-f": (x => maybe.just(x + 1), x => if x > 0 { maybe.just(x) } else { maybe.nothing }),
-  "arrows-g": (x => maybe.just(x * 2), x => maybe.nothing),
+  actions: (option.some(5), option.nothing),
+  "arrows-f": (x => option.some(x + 1), x => if x > 0 { option.some(x) } else { option.nothing }),
+  "arrows-g": (x => option.some(x * 2), x => option.nothing),
   "plain-fs": (x => x + 1,),
   "plain-gs": (x => x * 2,),
 ))
-#assert(maybe-report.passed, message: repr(maybe-report.failures))
+#assert(option-report.passed, message: repr(option-report.failures))
 
 #let result-report = check-laws(result.monad, eq, (
   values: (1, 2),

@@ -2,7 +2,7 @@
 //
 // Monadic values are usually opaque (closures, structured data), so equality
 // is monad-specific. Callers supply an `eq: (M a, M a) -> bool` predicate.
-// For pure monads (Maybe, Result, Identity) `eq` is just `(a, b) => a == b`.
+// For pure monads (Option, Result, Identity) `eq` is just `(a, b) => a == b`.
 // For State/Reader, `eq` observes via `run` over sample states/envs.
 //
 // Laws checked:
@@ -19,7 +19,7 @@
 /// `bind(pure(a), f) == f(a)`.
 ///
 /// ```example
-/// #check-left-identity(maybe.monad, (a, b) => a == b, 5, x => maybe.just(x + 1))
+/// #check-left-identity(option.monad, (a, b) => a == b, 5, x => option.some(x + 1))
 /// ```
 ///
 /// -> bool
@@ -123,11 +123,11 @@
 /// Returns `(passed: bool, failures: array)`.
 ///
 /// ```example
-/// #let report = check-laws(maybe.monad, (a, b) => a == b, (
+/// #let report = check-laws(option.monad, (a, b) => a == b, (
 ///   values: (1, 2),
-///   actions: (maybe.just(5), maybe.nothing),
-///   "arrows-f": (x => maybe.just(x + 1),),
-///   "arrows-g": (x => maybe.just(x * 2),),
+///   actions: (option.some(5), option.nothing),
+///   "arrows-f": (x => option.some(x + 1),),
+///   "arrows-g": (x => option.some(x * 2),),
 /// ))
 /// #report.passed
 /// ```
