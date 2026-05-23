@@ -109,6 +109,18 @@
   ),
 )
 
+#show raw.where(lang: "example"): it => tidy.show-example.show-example(
+  raw(it.text, block: true, lang: "typ"),
+  mode: "markup",
+  scope: example-scope,
+  layout: tidy.show-example.default-layout-example.with(
+    code-block: block.with(radius: 3pt, stroke: .5pt + luma(200)),
+    preview-block: block.with(radius: 3pt, fill: rgb("#e4e5ea")),
+    col-spacing: 5pt,
+    scale-preview: 100%,
+  ),
+)
+
 #let render(path, name) = {
   let docs = tidy.parse-module(
     read(path),
@@ -139,8 +151,11 @@ There are three usage idioms:
 + *Define your own instance* — a monad is just a dict
   `(pure: .., bind: ..)`. Build one; verify it with `check-laws`.
 
-The remainder of this manual is auto-generated reference documentation
-for every public symbol.
+The next chapter (#emph[A guided tour]) walks through the abstraction
+from scratch — recommended on a first read. The remaining chapters are
+auto-generated reference documentation for every public symbol.
+
+#include "tutorial.typ"
 
 = Core combinators
 
