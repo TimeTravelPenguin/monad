@@ -33,30 +33,30 @@ for everything else.
 
 ## What you get
 
-| Module | Purpose |
-| --- | --- |
-| `core.typ` | `pure`, `bind`, `seq`/`do`, `do-bind`/`let-bind`, `fmap`, `join`, `ap`, `kleisli`, `sequence`, `map-m`, `when`, `replicate` |
-| `laws.typ` | Runtime checkers for the three monad laws plus the two functor laws |
-| `free.typ` | `make(handlers:)` — derive a State-backed builder from named ops |
-| `instances/identity.typ` | The trivial monad |
-| `instances/option.typ` | `some`/`nothing`, short-circuit on absence |
-| `instances/result.typ` | `ok`/`err`, short-circuit on error |
-| `instances/state.typ` | `s -> (s, a)` with `get`, `put`, `modify`, `gets`, plus keyed helpers |
-| `instances/reader.typ` | `env -> a` with `ask`, `asks`, `local` |
-| `instances/writer.typ` | `(log, a)` over a user-supplied monoid; default log is `array` |
+| Module                   | Purpose                                                                                                                     |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| `core.typ`               | `pure`, `bind`, `seq`/`do`, `do-bind`/`let-bind`, `fmap`, `join`, `ap`, `kleisli`, `sequence`, `map-m`, `when`, `replicate` |
+| `laws.typ`               | Runtime checkers for the three monad laws plus the two functor laws                                                         |
+| `free.typ`               | `make(handlers:)` — derive a State-backed builder from named ops                                                            |
+| `instances/identity.typ` | The trivial monad                                                                                                           |
+| `instances/option.typ`   | `some`/`nothing`, short-circuit on absence                                                                                  |
+| `instances/result.typ`   | `ok`/`err`, short-circuit on error                                                                                          |
+| `instances/state.typ`    | `s -> (s, a)` with `get`, `put`, `modify`, `gets`, plus keyed helpers                                                       |
+| `instances/reader.typ`   | `env -> a` with `ask`, `asks`, `local`                                                                                      |
+| `instances/writer.typ`   | `(log, a)` over a user-supplied monoid; default log is `array`                                                              |
 
 ## Why not just use `typst-algorithmic`'s pattern?
 
 `typst-algorithmic` is what inspired this — it builds a clever AST from
-block-joined constructors. That pattern is great for *describing* a static
+block-joined constructors. That pattern is great for _describing_ a static
 structure (a pseudocode listing). It is **not a monad**:
 
-1. Sequencing is array `+` — a *monoid* operation, not a monad bind. Earlier
+1. Sequencing is array `+` — a _monoid_ operation, not a monad bind. Earlier
    actions cannot pass values to later ones.
 2. There is no `pure`. A plain value cannot be lifted into the structure.
 3. There is no `bind`. `Op1 >>= \x -> Op2(x)` is unrepresentable; every node
    is independent.
-4. Effects are conflated with rendering. An "op" *is* its rendered content;
+4. Effects are conflated with rendering. An "op" _is_ its rendered content;
    there is no "describe a computation, then interpret it" separation.
 5. Node shape is ad-hoc: a node may be `array | dict | content`, dispatched
    on `type()`. There is no contract a custom op must satisfy.
@@ -81,7 +81,7 @@ SomeEnv({ Set("x", 2); Add("x", 3) })
 
 ### 2. `do-bind` — sequencing with named results
 
-When a later op needs the *value* of an earlier op (not just shared state),
+When a later op needs the _value_ of an earlier op (not just shared state),
 use `do-bind`. Steps that need the previous value wrap themselves in
 `let-bind`:
 
@@ -172,6 +172,21 @@ src/
 examples/              # ready-to-compile demos
 tests/                 # tytanic test suite
 ```
+
+## Acknowledgement of AI
+
+While writing this package, Claude Opus 4.7 was heavily used. _**HOWEVER**_,
+all results were heavily scrutinised, checked, and always assumed wrong
+until manually validated.
+
+I have extensive experience with Monads, and am confident that this package is
+correct --- or at least, it is well written and documented.
+
+Monads are challenging to document (in my opinion), and I find that Claude
+manages to explain/document things significantly better than me.
+
+So, know that everything about this package was carefully designed and planned
+ahead of time --- Claude followed _my_ recipe.
 
 ## License
 
