@@ -205,15 +205,14 @@ tests/                 # tytanic test suite
 
 ## Acknowledgement of AI
 
-While writing this package, Claude Opus 4.7 was heavily used. _**HOWEVER**_,
-all results were heavily scrutinised, checked, and always assumed wrong
-until manually validated.
+Claude Opus 4.7 was used while writing this package. _**HOWEVER**_, all results were
+heavily scrutinised, checked, and always assumed wrong until manually validated. Almost
+everything is derived from my own implementations or at least design. Much time and
+attention was given to ensure that this package is as correct as I can possibly make it.
 
-I have extensive experience with Monads, and am confident that this package is
-correct --- or at least, it is well written and documented.
-
-Monads are challenging to document (in my opinion), and I find that Claude
-manages to explain/document things significantly better than me.
+While I have extensive experience with Monads, I have always found them challenging to
+document in simple terms. I find that Claude manages to explain/document things
+significantly better than me.
 
 So, know that everything about this package was carefully designed and planned
 ahead of time --- Claude followed _my_ recipe.
