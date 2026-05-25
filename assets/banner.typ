@@ -1,8 +1,3 @@
-// Repository banner.
-//
-// Compile to SVG with:
-//   typst compile --root . assets/banner.typ assets/banner.svg
-
 #let is-banner = if "banner" in sys.inputs { true } else { false }
 
 #let opts = (
