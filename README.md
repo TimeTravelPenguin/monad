@@ -8,8 +8,8 @@ for everything else.
 The example below defines a language-agnostic function-signature DSL and
 runs the *same* program through a Python interpreter and a Rust
 interpreter — the classic "describe vs interpret" split that proper
-monad structure unlocks. The full file is in
-[`examples/sig-dsl.typ`](examples/sig-dsl.typ).
+monad structure unlocks. See the full file for a more complete demonstration
+[`examples/sig-dsl.typ`][sig-dsl].
 
 ```typ
 #import "@preview/monad:0.1.0": free
@@ -40,7 +40,7 @@ monad structure unlocks. The full file is in
 })
 ```
 
-Two interpreters in [`examples/sig-dsl.typ`][sig-dsl] walk the resulting state. The
+Two interpreters in [`sig-dsl.typ`][sig-dsl] walk the resulting state. The
 same `fetch-users` value produces:
 
 ```python
@@ -57,8 +57,6 @@ async fn fetch_users(limit: i64) -> Vec<String> {
 Type translation (`text` → `str`/`String`, `int` → `int`/`i64`,
 `("list", T)` → `list[T]`/`Vec<T>`), docstring format, and body convention
 all differ between the two; the DSL itself stays neutral.
-
-See [`examples/sig-dsl.typ`][sig-dsl] for a fuller example.
 
 [sig-dsl]: examples/sig-dsl.typ
 
