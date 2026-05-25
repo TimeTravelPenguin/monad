@@ -19,7 +19,7 @@
   #v(3cm)
   #text(28pt, weight: 700)[monad]
   #v(0.4cm)
-  #text(14pt)[Build composable Typst DSLs with lawful sequencing..]
+  #text(14pt)[Build composable Typst DSLs with lawful sequencing.]
   #v(0.8cm)
   #text(10pt)[Version #ver]
 ]
