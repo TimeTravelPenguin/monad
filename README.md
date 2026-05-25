@@ -54,9 +54,9 @@ async fn fetch_users(limit: i64) -> Vec<String> {
 }
 ```
 
-Type translation (`text` → `str`/`String`, `int` → `int`/`i64`,
-`("list", T)` → `list[T]`/`Vec<T>`), docstring format, and body convention
-all differ between the two; the DSL itself stays neutral.
+Type translation (`text` → `str`/`String`, `int` → `int`/`i64`, `("list", T)` →
+`list[T]`/`Vec<T>`), docstring format (see the full example), and body convention all
+differ between the two; the DSL itself stays neutral.
 
 [sig-dsl]: examples/sig-dsl.typ
 
