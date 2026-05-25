@@ -101,9 +101,14 @@
 )
 
 // Like `hidden-example` but for multiple bodies that share the same setup.
-#let join-examples(..bodies, sep: "\n") = tidy.show-example.show-example(
+#let join-examples(
+  ..bodies,
+  setup: ``,
+  sep: "\n",
+) = tidy.show-example.show-example(
   raw(bodies.pos().map(it => it.text).join(sep), block: true, lang: "typ"),
   mode: "markup",
   scope: example-scope,
+  preamble: setup.text + "\n",
   layout: _layout,
 )

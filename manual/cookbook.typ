@@ -270,8 +270,21 @@ warning rather than abort. The result is `(warnings, value)`.
 ))
 ```
 
+#let _format-output = ```typ
+#show: it => {
+  let it = raw(
+    it.children.last().text
+      .replace("((", "(\n\t(")
+      .replace("))", ")\n)")
+      .replace("), (", "),\n\t("),
+    lang: "typc"
+  )
+  it
+}
+```
 #join-examples(
   sep: "\n\n",
+  setup: _format-output,
   _writer-setup,
   ```typ
   #validate-form((
