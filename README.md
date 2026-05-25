@@ -1,5 +1,7 @@
 # monad
 
+[![Manual](https://img.shields.io/badge/manual-PDF-blue?logo=readthedocs&logoColor=white)](https://raw.githubusercontent.com/TimeTravelPenguin/monad/main/manual/manual.pdf)
+
 A Typst package for building **correct, lawful monadic DSLs**. Define a
 vocabulary of operations; the library hands back a builder that lets your
 users write programs as block-joined sequences, plus a State monad instance
