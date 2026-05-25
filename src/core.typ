@@ -184,9 +184,8 @@
   /// Array of monadic values. -> array
   ms,
 ) = {
-  let actions = _flatten(ms)
   let acc = (monad.pure)(())
-  for m in actions {
+  for m in ms {
     acc = (monad.bind)(
       acc,
       xs => (monad.bind)(m, v => (monad.pure)(xs + (v,))),
