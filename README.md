@@ -2,13 +2,15 @@
 
 [![Manual](https://img.shields.io/badge/manual-PDF-blue?logo=readthedocs&logoColor=white)](https://raw.githubusercontent.com/TimeTravelPenguin/monad/main/manual/manual.pdf)
 
+![banner](assets/banner.png)
+
 A Typst package for building **correct, lawful monadic DSLs**. Define a
 vocabulary of operations; the library hands back a builder that lets your
 users write programs as block-joined sequences, plus a State monad instance
 for everything else.
 
 The example below defines a language-agnostic function-signature DSL and
-runs the *same* program through a Python interpreter and a Rust
+runs the _same_ program through a Python interpreter and a Rust
 interpreter — the classic "describe vs interpret" split that proper
 monad structure unlocks. See the full file for a more complete demonstration
 [`examples/sig-dsl.typ`][sig-dsl].

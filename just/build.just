@@ -1,3 +1,9 @@
+_default: examples assets manual
+
+[no-cd]
+@manual:
+  just --justfile just/manual.just build 
+
 [no-cd]
 examples:
     #!/usr/bin/env sh
@@ -18,3 +24,8 @@ examples:
         printf "  %s\n" "$out"
       fi
     done
+
+[no-cd]
+@assets:
+    typst c --root . assets/banner.typ --format png --ppi 300
+    echo "Generated assets/banner.png"
