@@ -112,6 +112,7 @@
   let cur = state.at(key, default: default)
   let next = f(cur)
   let s = state
+
   s.insert(key, next)
   (s, next)
 }

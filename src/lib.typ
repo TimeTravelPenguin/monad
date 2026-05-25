@@ -1,5 +1,3 @@
-// monad — public entry point.
-//
 // Import the whole library with a prefix:
 //
 //   #import "@preview/monad:0.1.0" as m

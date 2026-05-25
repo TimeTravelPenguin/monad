@@ -57,6 +57,7 @@
   init: (:),
 ) = {
   let constructors = (:)
+
   for (name, h) in handlers.pairs() {
     constructors.insert(name, (..args) => (h(..args),))
   }
@@ -65,8 +66,10 @@
     let actions = _flatten(body)
     let state = start
     let last = none
+
     for op in actions {
       let (s, v) = op(state)
+
       state = s
       last = v
     }

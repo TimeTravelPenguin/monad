@@ -122,6 +122,7 @@
 #let _flatten(body) = {
   let out = ()
   let items = if type(body) == array { body } else { (body,) }
+
   for x in items {
     if type(x) == array {
       out += _flatten(x)
@@ -129,6 +130,7 @@
       out.push(x)
     }
   }
+
   out
 }
 
@@ -185,6 +187,7 @@
   ms,
 ) = {
   let acc = (monad.pure)(())
+
   for m in ms {
     acc = (monad.bind)(
       acc,
@@ -243,6 +246,7 @@
 ) = {
   x => {
     let acc = (monad.pure)(x)
+
     for f in fs {
       acc = (monad.bind)(acc, f)
     }
@@ -309,11 +313,13 @@
 ) = {
   let acc = (monad.pure)(())
   let i = 0
+
   while i < n {
     acc = (monad.bind)(
       acc,
       xs => (monad.bind)(m, v => (monad.pure)(xs + (v,))),
     )
+
     i = i + 1
   }
 
@@ -367,11 +373,13 @@
   }
 
   let first = steps.first()
+
   if _is-let-bind(first) {
     panic("do-bind: first step must be an action, not a let-bind")
   }
 
   let acc = first
+
   for step in steps.slice(1) {
     if _is-let-bind(step) {
       acc = (monad.bind)(acc, step._do-bind-cont)

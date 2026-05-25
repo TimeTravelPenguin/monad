@@ -48,8 +48,8 @@
   Param: (name, type) => st => {
     let s = st
     s.insert(
-      "params", 
-      st.at("params", default: ()) + ((name: name, type: type),)
+      "params",
+      st.at("params", default: ()) + ((name: name, type: type),),
     )
     (s, none)
   },
@@ -77,21 +77,50 @@
 
 #let to-python(sig) = {
   let prefix = sig.at("async", default: "")
-  let params = sig.at("params", default: ()).map(
-    p => p.name + ": " + render-type("python", p.type),
-  ).join(", ")
-  let head = prefix + "def " + sig.name + "(" + params + ") -> " + render-type("python", sig.returns) + ":"
+  let params = sig
+    .at("params", default: ())
+    .map(
+      p => p.name + ": " + render-type("python", p.type),
+    )
+    .join(", ")
+
+  let head = (
+    prefix
+      + "def "
+      + sig.name
+      + "("
+      + params
+      + ") -> "
+      + render-type("python", sig.returns)
+      + ":"
+  )
+
   let doc = if "doc" in sig { "    \"\"\"" + sig.doc + "\"\"\"\n" } else { "" }
   head + "\n" + doc + "    ..."
 }
 
 #let to-rust(sig) = {
   let prefix = sig.at("async", default: "")
-  let params = sig.at("params", default: ()).map(
-    p => p.name + ": " + render-type("rust", p.type),
-  ).join(", ")
+  let params = sig
+    .at("params", default: ())
+    .map(
+      p => p.name + ": " + render-type("rust", p.type),
+    )
+    .join(", ")
+
   let doc = if "doc" in sig { "/// " + sig.doc + "\n" } else { "" }
-  doc + prefix + "fn " + sig.name + "(" + params + ") -> " + render-type("rust", sig.returns) + " {\n    todo!()\n}"
+
+  (
+    doc
+      + prefix
+      + "fn "
+      + sig.name
+      + "("
+      + params
+      + ") -> "
+      + render-type("rust", sig.returns)
+      + " {\n    todo!()\n}"
+  )
 }
 
 // ===== example program =====
