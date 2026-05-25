@@ -1,5 +1,9 @@
 #import "@preview/tidy:0.4.3"
-#import "helpers.typ": example-scope, fixed-style, render-example, hidden-example
+#import "helpers.typ": (
+  example-scope, fixed-style, hidden-example, render-example,
+)
+
+#let ver = version(..sys.inputs.at("version").split(".").map(int))
 
 #set document(
   title: "monad — user manual",
@@ -15,9 +19,9 @@
   #v(3cm)
   #text(28pt, weight: 700)[monad]
   #v(0.4cm)
-  #text(14pt)[Build correct, lawful monadic DSLs in Typst.]
+  #text(14pt)[Build composable Typst DSLs with lawful sequencing..]
   #v(0.8cm)
-  #text(10pt)[Version 0.1.0]
+  #text(10pt)[Version #ver]
 ]
 
 #v(1fr)
