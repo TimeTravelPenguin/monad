@@ -1,4 +1,4 @@
-#let is-banner = if "banner" in sys.inputs { true } else { false }
+#let is-banner = "banner" in sys.inputs
 
 #let opts = (
   banner: (
