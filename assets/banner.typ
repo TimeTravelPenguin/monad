@@ -2,6 +2,8 @@
 
 #let opts = (
   banner: (
+    // 1280x640px at 300dpi, as recommended by
+    // GitHub for social media preview images
     banner-width: 1280in / 300,
     banner-height: 640in / 300,
     margin: 0em,
