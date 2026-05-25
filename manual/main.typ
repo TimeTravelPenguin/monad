@@ -60,9 +60,9 @@
 = Introduction
 
 The `monad` package gives you the building blocks for designing monadic
-DSLs in Typst — like the State-flavored "builder" pattern popularized by
-packages such as `typst-algorithmic`, but with proper monad structure
-(`pure`, `bind`, the three monad laws) so your DSLs compose predictably.
+DSLs in Typst — the State-flavored "builder" pattern that several Typst
+packages already use, but with proper monad structure (`pure`, `bind`,
+the three monad laws) so your DSLs compose predictably.
 
 There are three usage idioms:
 

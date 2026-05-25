@@ -5,31 +5,61 @@ vocabulary of operations; the library hands back a builder that lets your
 users write programs as block-joined sequences, plus a State monad instance
 for everything else.
 
+The example below defines a language-agnostic function-signature DSL and
+runs the *same* program through a Python interpreter and a Rust
+interpreter — the classic "describe vs interpret" split that proper
+monad structure unlocks. The full file is in
+[`examples/sig-dsl.typ`](examples/sig-dsl.typ).
+
 ```typ
 #import "@preview/monad:0.1.0": free
 
 #let builder = free.make(handlers: (
-  Set: (key, val) => state => {
-    let s = state; s.insert(key, val); (s, val)
+  Name: n => st => { let s = st; s.insert("name", n); (s, none) },
+  Param: (n, t) => st => {
+    let s = st
+    s.insert("params", st.at("params", default: ()) + ((name: n, type: t),))
+    (s, none)
   },
-  Add: (key, n) => state => {
-    let cur = state.at(key, default: 0)
-    let s = state; s.insert(key, cur + n); (s, cur + n)
-  },
+  Returns: t => st => { let s = st; s.insert("returns", t); (s, none) },
+  Async: () => st => { let s = st; s.insert("async", true); (s, none) },
 ))
+#let (Name, Param, Returns, Async) = (
+  builder.ops.Name, builder.ops.Param, builder.ops.Returns, builder.ops.Async,
+)
+#let eval = builder.eval
+#let sig = body => eval(body).state
 
-#let Set = builder.ops.Set
-#let Add = builder.ops.Add
-#let SomeEnv = builder.eval
-
-#let env = SomeEnv({
-  Set("x", 2)
-  Add("x", 3)
+// The describe phase: one program, no notion of target language.
+#let fetch-users = sig({
+  Async()
+  Name("fetch_users")
+  Param("limit", "int")
+  Returns(("list", "text"))
 })
-
-#env.value  // 5
-#env.state  // (x: 5)
 ```
+
+Two interpreters in [`examples/sig-dsl.typ`][sig-dsl] walk the resulting state. The
+same `fetch-users` value produces:
+
+```python
+async def fetch_users(limit: int) -> list[str]:
+    ...
+```
+
+```rust
+async fn fetch_users(limit: i64) -> Vec<String> {
+    todo!()
+}
+```
+
+Type translation (`text` → `str`/`String`, `int` → `int`/`i64`,
+`("list", T)` → `list[T]`/`Vec<T>`), docstring format, and body convention
+all differ between the two; the DSL itself stays neutral.
+
+See [`examples/sig-dsl.typ`][sig-dsl] for a fuller example.
+
+[sig-dsl]: examples/sig-dsl.typ
 
 ## What you get
 
@@ -45,11 +75,12 @@ for everything else.
 | `instances/reader.typ`   | `env -> a` with `ask`, `asks`, `local`                                                                                      |
 | `instances/writer.typ`   | `(log, a)` over a user-supplied monoid; default log is `array`                                                              |
 
-## Why not just use `typst-algorithmic`'s pattern?
+## Why not just use the plain block-join builder pattern?
 
-`typst-algorithmic` is what inspired this — it builds a clever AST from
-block-joined constructors. That pattern is great for _describing_ a static
-structure (a pseudocode listing). It is **not a monad**:
+Several Typst packages already use a block-joined-builder shape — each
+constructor returns a wrapped value and `{ Op1; Op2 }` joins them via array
+`+` into an AST that the package later walks. That pattern is fine for
+_describing_ a static structure, but it is **not a monad**:
 
 1. Sequencing is array `+` — a _monoid_ operation, not a monad bind. Earlier
    actions cannot pass values to later ones.
