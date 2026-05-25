@@ -22,7 +22,7 @@ examples:
 assets:
   #!/usr/bin/env sh
 
-  deleted_assets=$(find assets -type f -iname 'banner.png' -print -delete)
+  deleted_assets=$(find assets -type f -iname '*.png' -print -delete)
 
   if [ -n "$deleted_assets" ]; then
       echo "Deleted assets:"

@@ -29,3 +29,10 @@ examples:
 @assets:
     typst c --root . assets/banner.typ --format png --ppi 300
     echo "Generated assets/banner.png"
+
+    typst c --root . assets/banner.typ \
+      --format png \
+      --ppi 300 \
+      --input banner=1 \
+      "assets/banner_social.png"
+    echo "Generated assets/banner_social.png"

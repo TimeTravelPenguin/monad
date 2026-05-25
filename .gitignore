@@ -6,3 +6,4 @@ tests/**/diff/
 tests/**/out/
 .vscode/
 HANDOFF.md
+assets/banner_social.png

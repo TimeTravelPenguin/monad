@@ -3,29 +3,60 @@
 // Compile to SVG with:
 //   typst compile --root . assets/banner.typ assets/banner.svg
 
+#let is-banner = if "banner" in sys.inputs { true } else { false }
+
+#let opts = (
+  banner: (
+    banner-width: 1280in / 300,
+    banner-height: 640in / 300,
+    margin: 0em,
+    text-base: 5pt,
+    text-label: 0.625em,
+    text-title: 1.83em,
+    text-subtitle: 0.8em,
+    text-section: 0.67em,
+  ),
+  default: (
+    banner-width: auto,
+    banner-height: auto,
+    margin: 1.6em,
+    text-base: 10pt,
+    text-label: 7.5pt,
+    text-title: 22pt,
+    text-subtitle: 9.5pt,
+    text-section: 8pt,
+  ),
+)
+
+#let opts = if is-banner { opts.banner } else { opts.default }
+
 #set page(
-  width: auto,
-  height: auto,
-  margin: 1.6em,
+  width: opts.banner-width,
+  height: opts.banner-height,
+  margin: opts.margin,
   fill: white,
 )
-#set text(size: 10pt)
+#set align(center + horizon)
+#set text(size: opts.text-base)
 
-#let label(s) = text(size: 7.5pt, fill: luma(110), weight: 500, s)
+#let label(s) = text(size: opts.text-label, fill: luma(110), weight: 500, s)
 
 #grid(
   columns: (auto, auto, auto),
   column-gutter: 1.4em,
-  align: horizon,
+  align: (left + horizon, center + horizon, left + horizon),
 
   // Left column: title + describe-phase DSL
   [
-    #text(weight: 800, size: 22pt)[monad]
+    #text(weight: 800, size: opts.text-title)[monad]
     #v(-1.5em)
-    #text(size: 9.5pt, fill: luma(60))[Lawful monadic DSLs for Typst.]
+    #text(
+      size: opts.text-subtitle,
+      fill: luma(60),
+    )[Lawful monadic DSLs for Typst.]
 
     #text(
-      size: 8pt,
+      size: opts.text-section,
       fill: luma(110),
     )[Describe once #sym.dot.c interpret anywhere.]
 
@@ -44,7 +75,7 @@
   ],
 
   // Middle: arrow
-  text(size: 22pt, fill: luma(160))[#sym.arrow.r],
+  text(size: opts.text-title, fill: luma(160))[#sym.arrow.r],
 
   // Right column: two interpretations
   grid(
